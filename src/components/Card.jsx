@@ -1,7 +1,8 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-
+import axios from "axios"
+import {format} from "timeago.js"
 const Container = styled.div`
   width: ${(props) => props.type !== "sm" && "360px"};
   margin-bottom: ${(props) => (props.type === "sm" ? "10px" : "45px")};
@@ -51,7 +52,20 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
 `;
 
-const Card = ({ type }) => {
+const Card = ({ type, video }) => {
+  const [channel, setChannel] = useState({});
+  useEffect(() => {
+    const fetchVideos = async () => {
+      const res = await axios.get(`/users/find/${video.userId}`);
+      setChannel(res.data);
+      console.log(res.data);
+    };
+    fetchVideos();
+  }, [video.userId]);
+  console.log(video)
+  console.log(channel);
+  
+
   return (
     <Link to="/video/test" style={{ textDecoration: "none" }}>
       <Container type={type}>
@@ -65,9 +79,9 @@ const Card = ({ type }) => {
             src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo"
           />
           <Texts>
-            <Title>Test Video</Title>
-            <ChannelName>Lama Dev</ChannelName>
-            <Info>660,908 views • 1 day ago</Info>
+            <Title>{video.title}</Title>
+            <ChannelName>{channel.name}</ChannelName>
+            <Info>{video.views} views • {format(video.createdAt)} </Info>
           </Texts>
         </Details>
       </Container>
